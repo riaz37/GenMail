@@ -102,6 +102,7 @@
     "sonner": "^1.5.0",
     "stripe": "^16.12.0",
     "superjson": "^2.2.1",
+    "svix": "^1.64.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tinykeys": "^3.0.0",
