@@ -1,77 +1,129 @@
-![Full Stack Chat PDF Clone](https://github.com/user-attachments/assets/03580ec6-99f0-4f3e-8a0d-141e15d2e17b)
+# GenMail - AI-Powered Email Client
 
-[Link to YouTube Tutorial]([https://www.youtube.com/watch?v=bZFedu-0emE](https://youtu.be/Qm7-7PnszM4))
+![GenMail Interface](public/demo.png)
 
-# Overview
+## Overview
 
-Welcome to this comprehensive full-stack tutorial where we build and deploy a fully featured AI powered email client using NextJS 14. Join me as we build an entire project from the ground up and seamlessly deploy it to Vercel 🚀. The application also includes a subscription feature, where users can subscribe to access premium features. The subscription process is handled using Stripe for payments and webhooks for event processing.
+GenMail is a modern, AI-powered email client built with Next.js 14. It combines artificial intelligence with elegant design to transform your email experience. The application includes premium features accessible through a subscription model, with payments handled by Stripe.
 
+## Features
 
-# Technologies and Frameworks
+- 🤖 **AI-Powered Assistant**: Smart email drafting and response suggestions
+- ⌨️ **Command Palette**: Quick actions and navigation with keyboard shortcuts
+- ✨ **Smart Categorization**: Automatic email organization and priority inbox
+- ⚡ **Lightning Fast**: Optimized interface for rapid email management
+- 🔒 **Privacy First**: End-to-end encryption and secure data handling
+- ⏰ **Time Saving**: AI-powered automation for email management
 
-- Next.js
+## Tech Stack
+
+### Frontend
+- Next.js 14
 - React
 - TypeScript
 - Tailwind CSS
+- shadcn/ui
+- Framer Motion
+
+### Authentication & User Management
 - Clerk
-- Prisma ORM
+
+### Database & ORM
 - PostgreSQL
-- AWS SDK
+- Prisma ORM
+- Neon Database (Serverless)
+
+### AI & Machine Learning
 - OpenAI API
-- Stripe
-- Axios
-- Pinecone
 - OpenAI Edge
-- Neon Database Serverless
-- @tanstack/react-query
-- @clerk/nextjs
-- clsx
-- tailwind-merge
 
-# Installation
+### State Management & Data Fetching
+- TRPC
+- Tanstack Query
+- Jotai
 
-Follow the steps below to install and setup the project:
+### Payment Processing
+- Stripe
+
+### Development Tools
+- ESLint
+- Prettier
+- TypeScript
+
+## Getting Started
 
 1. **Clone the repository**
-
-   Open your terminal and run the following command:
-
    ```bash
-   git clone https://github.com/Elliott-Chong/normalhuman.git
+   git clone https://github.com/yourusername/genmail.git
+   cd genmail
    ```
 
-2. **Navigate to the project directory**
-
-   ```bash
-   cd normalhuman
-   ```
-
-3. **Install Node.js**
-
-   The project requires Node.js version 13.4.19 or later. You can download it from [here](https://nodejs.org/en/download/).
-
-4. **Install the required dependencies**
-
-   Run the following command to install all the required dependencies:
-
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-   This will install all the dependencies listed in the `package.json` file, including Next.js, React, React DOM, Axios, Stripe, Tailwind CSS, and other specific dependencies such as "@aws-sdk/client-s3" and "@clerk/nextjs".
+3. **Set up environment variables**
+   Create a `.env` file in the root directory with the following variables:
+   ```env
+   # Database
+   DATABASE_URL="your_database_url"
 
-5. **Setup environment variables**
+   # Clerk Auth
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+   CLERK_SECRET_KEY=
 
-    Create a `.env` file in the root directory of your project and add the required environment variables.
+   # OpenAI
+   OPENAI_API_KEY=
 
-6. **Run the project**
+   # Stripe
+   STRIPE_SECRET_KEY=
+   STRIPE_WEBHOOK_SECRET=
+   ```
 
-    Now, you can run the project using the following command:
+4. **Initialize the database**
+   ```bash
+   npm run db:push
+   ```
 
-    ```bash
-    npm run dev
-    ```
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+## Project Structure
 
+```
+genmail/
+├── src/
+│   ├── app/           # Next.js app directory
+│   ├── components/    # Reusable components
+│   ├── lib/          # Utility functions and shared logic
+│   ├── styles/       # Global styles
+│   └── trpc/         # TRPC setup and procedures
+├── prisma/           # Database schema and migrations
+├── public/           # Static assets
+└── ...
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Clerk](https://clerk.dev/)
+- [OpenAI](https://openai.com/)
