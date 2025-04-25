@@ -1,24 +1,28 @@
 'use server';
 
-import { streamText } from 'ai';
-import { openai } from '@ai-sdk/openai';
 import { createStreamableValue } from 'ai/rsc';
+import { geminiModel } from '@/lib/gemini';
 
 export async function generate(input: string) {
     const stream = createStreamableValue('');
 
-    console.log("input", input);
     (async () => {
-        const { textStream } = await streamText({
-            model: openai('gpt-4o-mini'),
-            prompt: `
-            You are a helpful AI embedded in a email client app that is used to answer questions about the emails in the inbox.
-            ${input}
-            `,
+        const result = await geminiModel.generateContentStream({
+            contents: [
+                {
+                    role: "user",
+                    parts: [
+                        {
+                            text: `You are a helpful AI embedded in a email client app that is used to answer questions about the emails in the inbox.
+                            ${input}`,
+                        },
+                    ],
+                },
+            ],
         });
 
-        for await (const delta of textStream) {
-            stream.update(delta);
+        for await (const chunk of result.stream) {
+            stream.update(chunk.text());
         }
 
         stream.done();

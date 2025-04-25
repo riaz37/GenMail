@@ -81,21 +81,18 @@ const AskAI = ({ isCollapsed }: { isCollapsed: boolean }) => {
                         </div>
                         <div className="h-2"></div>
                         <div className="flex items-center gap-2 flex-wrap">
-                            <span onClick={() => handleInputChange({
-                                target: {
-                                    value: 'What can I ask?'
-                                }
-                            })} className='px-2 py-1 bg-gray-800 text-gray-200 rounded-md text-xs'>What can I ask?</span>
-                            <span onClick={() => handleInputChange({
-                                target: {
-                                    value: 'When is my next flight?'
-                                }
-                            })} className='px-2 py-1 bg-gray-800 text-gray-200 rounded-md text-xs'>When is my next flight?</span>
-                            <span onClick={() => handleInputChange({
-                                target: {
-                                    value: 'When is my next meeting?'
-                                }
-                            })} className='px-2 py-1 bg-gray-800 text-gray-200 rounded-md text-xs'>When is my next meeting?</span>
+                            <span onClick={() => handleInputChange(createSyntheticChangeEvent('What can I ask?'))} 
+                                  className='px-2 py-1 bg-gray-800 text-gray-200 rounded-md text-xs'>
+                                What can I ask?
+                            </span>
+                            <span onClick={() => handleInputChange(createSyntheticChangeEvent('When is my next flight?'))} 
+                                  className='px-2 py-1 bg-gray-800 text-gray-200 rounded-md text-xs'>
+                                When is my next flight?
+                            </span>
+                            <span onClick={() => handleInputChange(createSyntheticChangeEvent('When is my next meeting?'))} 
+                                  className='px-2 py-1 bg-gray-800 text-gray-200 rounded-md text-xs'>
+                                When is my next meeting?
+                            </span>
                         </div>
                     </div>
                     }
@@ -136,5 +133,20 @@ const AskAI = ({ isCollapsed }: { isCollapsed: boolean }) => {
         </div>
     )
 }
+
+const createSyntheticChangeEvent = (value: string): React.ChangeEvent<HTMLInputElement> => ({
+    target: {
+        value
+    },
+    currentTarget: {
+        value
+    },
+    preventDefault: () => {},
+    stopPropagation: () => {},
+    nativeEvent: new Event('click'),
+    bubbles: true,
+    cancelable: true,
+    type: 'change'
+} as React.ChangeEvent<HTMLInputElement>);
 
 export default AskAI

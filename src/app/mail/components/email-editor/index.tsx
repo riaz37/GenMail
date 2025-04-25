@@ -7,7 +7,7 @@ import TipTapMenuBar from "./menu-bar";
 import Text from "@tiptap/extension-text";
 import { Button } from "@/components/ui/button";
 
-import { generate } from './action';
+import { generateEmail } from './action';
 import { readStreamableValue } from 'ai/rsc';
 import { Separator } from "@/components/ui/separator";
 import { useThread } from "../../use-thread";
@@ -48,14 +48,13 @@ const EmailEditor = ({ toValues, ccValues, subject, setSubject, to, handleSend, 
     const [generation, setGeneration] = React.useState('');
 
     const aiGenerate = async (prompt: string) => {
-        const { output } = await generate(prompt)
+        const { output } = await generateEmail('', prompt);
 
         for await (const delta of readStreamableValue(output)) {
             if (delta) {
                 setGeneration(delta);
             }
         }
-
     }
 
 
