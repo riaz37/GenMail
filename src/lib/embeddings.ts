@@ -1,18 +1,23 @@
-import { deepseek } from "./deepseek";
+import { embeddingModel } from "./gemini";
 
 export async function getEmbeddings(text: string) {
   try {
-    const response = await deepseek.embeddings.create({
-      model: "deepseek-embed",
-      input: text.replace(/\n/g, " "),
-    });
-
-    if (!response.data[0]?.embedding) {
+    const result = await embeddingModel.embedContent(text.replace(/\n/g, " "));
+    const embedding = await result.embedding;
+    
+    if (!embedding) {
       throw new Error("No embedding returned from API");
     }
-    return response.data[0].embedding;
+    return embedding;
   } catch (error) {
-    console.log("error calling deepseek embeddings api", error);
-    throw error;
+    console.error("Gemini Embedding API Error:", {
+      error,
+      text: text.substring(0, 100) + "...",
+    });
+    return fallbackEmbedding();
   }
+}
+
+function fallbackEmbedding() {
+  return new Array(1536).fill(0);
 }

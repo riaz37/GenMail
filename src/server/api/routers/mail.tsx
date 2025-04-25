@@ -5,7 +5,7 @@ import { syncEmailsToDatabase } from "@/lib/sync-to-db";
 import { db } from "@/server/db";
 import { getEmailDetails } from "@/lib/aurinko";
 import type { Prisma } from "@prisma/client";
-import { emailAddressSchema } from "@/lib/types";
+import { emailAddressSchema, EmailMessage, EmailHeader } from "@/lib/types";
 import { FREE_CREDITS_PER_DAY } from "@/app/constants";
 
 export const authoriseAccountAccess = async (accountId: string, userId: string) => {
@@ -289,7 +289,9 @@ export const mailRouter = createTRPCRouter({
         const acc = await authoriseAccountAccess(input.accountId, ctx.auth.userId)
         const account = new Account(acc.token)
         console.log('sendmail', input)
-        await account.sendEmail({
+        
+        // Send email through the API
+        const response = await account.sendEmail({
             body: input.body,
             subject: input.subject,
             threadId: input.threadId,
@@ -300,6 +302,41 @@ export const mailRouter = createTRPCRouter({
             from: input.from,
             inReplyTo: input.inReplyTo,
         })
+
+        // Sync the sent email to database
+        if (response?.id) {
+            const emailData: EmailMessage = {
+                id: response.id,
+                threadId: input.threadId || response.threadId,
+                createdTime: new Date().toISOString(),
+                lastModifiedTime: new Date().toISOString(),
+                sentAt: new Date().toISOString(),
+                receivedAt: new Date().toISOString(),
+                internetMessageId: response.internetMessageId || '',
+                subject: input.subject,
+                sysLabels: ['sent'],
+                keywords: [],
+                sysClassifications: [],
+                sensitivity: 'normal',
+                from: input.from,
+                to: input.to,
+                cc: input.cc || [],
+                bcc: input.bcc || [],
+                replyTo: [input.replyTo],
+                hasAttachments: false,
+                body: input.body,
+                bodySnippet: input.body.substring(0, 100),
+                attachments: [],
+                internetHeaders: [] as EmailHeader[],
+                nativeProperties: {},
+                folderId: '',
+                omitted: []
+            };
+
+            await syncEmailsToDatabase([emailData], input.accountId);
+        }
+
+        return response;
     }),
     getEmailSuggestions: protectedProcedure.input(z.object({
         accountId: z.string(),

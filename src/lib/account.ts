@@ -204,13 +204,10 @@ class Account {
                 }
             );
 
-            console.log('sendmail', response.data)
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error('Error sending email:', JSON.stringify(error.response?.data, null, 2));
-            } else {
-                console.error('Error sending email:', error);
             }
             throw error;
         }
