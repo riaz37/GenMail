@@ -18,7 +18,7 @@ model User {
     imageUrl     String?
 
     stripeSubscriptionId String?             @unique
-    stripeSubscription   StripeSubscription? @relation(fields: [stripeSubscriptionId], references: [id])
+    stripeSubscription StripeSubscription?
 
     role Role @default(user)
 
@@ -46,19 +46,14 @@ model ChatbotInteraction {
 }
 
 model StripeSubscription {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-
-    userId String? @unique
-    user   User?
-
-    subscriptionId String? @unique
-    productId      String?
-    priceId        String?
-    customerId     String?
-
+    id               String   @id @default(cuid())
+    subscriptionId   String   @unique
+    customerId       String
     currentPeriodEnd DateTime
+    createdAt        DateTime @default(now())
     updatedAt        DateTime @updatedAt
+    userId           String   @unique
+    user             User     @relation(fields: [userId], references: [id])
 }
 
 model Account {
@@ -194,4 +189,17 @@ enum MeetingMessageMethod {
     cancel
     counter
     other
+}
+
+model StripePricing {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    priceId   String  @unique
+    productId String
+    amount    Int
+    currency  String
+    interval  String
+
+    @@index([priceId])
 }

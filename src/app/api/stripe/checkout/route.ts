@@ -55,11 +55,10 @@ export async function GET(request: NextRequest) {
 
         const stripeSubscription = await db.stripeSubscription.create({
             data: {
-                subscriptionId: subscriptionId,
-                productId: productId,
-                priceId: plan.id,
-                customerId: customerId,
-                userId
+                subscriptionId: "sub_1RHpjaPHcsX6GpftaP2AI1s9",
+                customerId: "cus_SCEBeP2QbmchRS",
+                userId: "user_2wDc38oBwoz2T0Yn0wAmGB0E98d",
+                currentPeriodEnd: new Date("2025-05-25T17:08:18.000Z")
             }
         })
 

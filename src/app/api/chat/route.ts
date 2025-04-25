@@ -2,6 +2,8 @@ import { StreamingTextResponse, Message } from "ai";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { geminiModel } from "@/lib/gemini";
+import { db } from "@/server/db";
+import { FREE_CREDITS_PER_DAY } from "@/app/constants";
 
 export async function POST(req: Request) {
   try {
@@ -10,11 +12,44 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Check subscription status
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      include: { stripeSubscription: true }
+    });
+
+    const today = new Date().toDateString();
+    
+    // If user is not subscribed, check and update daily limit
+    if (!user?.stripeSubscription) {
+      const interaction = await db.chatbotInteraction.upsert({
+        where: {
+          day_userId: {
+            day: today,
+            userId: userId
+          }
+        },
+        update: {
+          count: { increment: 1 }
+        },
+        create: {
+          day: today,
+          userId: userId,
+          count: 1
+        }
+      });
+
+      if (interaction.count > FREE_CREDITS_PER_DAY) {
+        return NextResponse.json(
+          { error: "Limit reached. Please upgrade to pro for unlimited messages." },
+          { status: 429 }
+        );
+      }
+    }
+
     const { messages } = await req.json();
     const lastMessage = messages[messages.length - 1];
     
-    console.log('Processing chat request:', { messages, lastMessage });
-
     const result = await geminiModel.generateContentStream({
       contents: [{
         role: "user",
@@ -30,19 +65,15 @@ export async function POST(req: Request) {
       }
     });
 
-    console.log('Gemini response received:', result);
-
+    const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          const chunks: string[] = [];
           for await (const chunk of result.stream) {
             const text = chunk.text();
-            console.log('Streaming chunk:', text);
-            chunks.push(text);
-            controller.enqueue(text);
+            const messageChunk = JSON.stringify({ role: 'assistant', content: text });
+            controller.enqueue(encoder.encode(messageChunk + "\n"));
           }
-          console.log('All chunks:', chunks.join(''));
           controller.close();
         } catch (error) {
           console.error("Stream processing error:", error);
@@ -52,11 +83,8 @@ export async function POST(req: Request) {
     });
 
     return new StreamingTextResponse(stream);
-  } catch (error: any) {
-    console.error("Chat API error:", error.message, error.stack);
-    return NextResponse.json(
-      { error: "Internal server error: " + error.message },
-      { status: 500 },
-    );
+  } catch (error) {
+    console.error("Chat error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

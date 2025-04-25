@@ -12,23 +12,28 @@ export async function createCheckoutSession() {
         throw new Error('User not found');
     }
 
-    // Verify STRIPE_PRICE_ID exists
-    const priceId = process.env.STRIPE_PRICE_ID;
-    if (!priceId) {
-        throw new Error('STRIPE_PRICE_ID is not configured');
-    }
-
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
+            billing_address_collection: 'auto',
             line_items: [
                 {
-                    price: priceId,
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: 'Premium Subscription',
+                            description: 'Monthly subscription to premium features',
+                        },
+                        unit_amount: 999, // $9.99
+                        recurring: {
+                            interval: 'month',
+                        },
+                    },
                     quantity: 1,
                 },
             ],
             mode: 'subscription',
-            success_url: `${process.env.NEXT_PUBLIC_URL}/mail`,
+            success_url: `${process.env.NEXT_PUBLIC_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_URL}/pricing`,
             client_reference_id: userId,
         });
